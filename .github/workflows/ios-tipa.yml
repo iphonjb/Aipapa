@@ -1,45 +1,51 @@
-﻿name: Build IPA (TrollStore)
+name: iOS IPA Build - Aipapa
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: macos-15
+    defaults:
+      run:
+        shell: bash
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.0'
+
+      - name: Install CocoaPods
+        run: pod install --repo-update
+        working-directory: ./Aipapa
 
       - name: Generate Xcode Project
-        run: xcodegen generate
+        run: xcodegen generate --spec ./Aipapa/project.yml
 
-      - name: Build and Archive (unsigned)
+      - name: Ensure Info.plist exists
         run: |
-          xcodebuild \
-            -project Aipapa.xcodeproj \
+          mkdir -p ./Aipapa/build/Release-iphoneos/Aipapa.app
+          cp ./Aipapa/Info.plist ./Aipapa/build/Release-iphoneos/Aipapa.app/Info.plist
+
+      - name: Archive App
+        run: |
+          xcodebuild archive \
+            -workspace ./Aipapa/Aipapa.xcworkspace \
             -scheme Aipapa \
-            -sdk iphoneos \
             -configuration Release \
-            -archivePath "${{ github.workspace }}/build/Aipapa.xcarchive" \
-            clean archive \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
+            -archivePath $GITHUB_WORKSPACE/build/Aipapa.xcarchive \
+            -derivedDataPath $GITHUB_WORKSPACE/build/DerivedData
 
       - name: Export IPA
         run: |
           xcodebuild -exportArchive \
-            -archivePath "${{ github.workspace }}/build/Aipapa.xcarchive" \
-            -exportPath "${{ github.workspace }}/build" \
-            -exportOptionsPlist "${{ github.workspace }}/ExportOptions.plist"
-
-      - name: Upload IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: Aipapa-IPA
-          path: build/*.ipa
+            -archivePath $GITHUB_WORKSPACE/build/Aipapa.xcarchive \
+            -exportPath $GITHUB_WORKSPACE/build/ipa \
+            -exportOptionsPlist ./Aipapa/ExportOptions.plist
