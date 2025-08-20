@@ -1,0 +1,9 @@
+﻿build/
+DerivedData/
+*.xcworkspace/
+*.xcodeproj/
+*.xcarchive
+*.ipa
+Aipapa.xcodeproj/
+Aipapa.xcworkspace/
+models/
