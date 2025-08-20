@@ -1,9 +1,7 @@
-﻿build/
+﻿# models / big files
+*.gguf
+*.zip
+*.tar.gz
+build/
 DerivedData/
-*.xcworkspace/
-*.xcodeproj/
-*.xcarchive
-*.ipa
-Aipapa.xcodeproj/
-Aipapa.xcworkspace/
-models/
+*.xcworkspace

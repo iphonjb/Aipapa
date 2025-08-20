@@ -1,27 +1,16 @@
 ﻿name: Aipapa
 options:
-  minimumXcodeGenVersion: 2.38.0
+  bundleIdPrefix: com.iphonjb
+configs:
+  Debug: debug
+  Release: release
 targets:
   Aipapa:
     type: application
     platform: iOS
     deploymentTarget: "16.0"
     sources:
-      - path: Sources
-      - path: Resources
-        type: folder
+      - Sources
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.iphonjb.Aipapa
-      INFOPLIST_FILE: Info.plist
-      SWIFT_VERSION: 5.9
-      IPHONEOS_DEPLOYMENT_TARGET: 16.0
-      TARGETED_DEVICE_FAMILY: "1"
-      CODE_SIGN_STYLE: Manual
-      CODE_SIGNING_ALLOWED: NO
-      CODE_SIGNING_REQUIRED: NO
-      ENABLE_BITCODE: NO
-schemes:
-  Aipapa:
-    build:
-      targets:
-        Aipapa: all
+      INFO_PLIST_FILE: Info.plist
+      PRODUCT_BUNDLE_IDENTIFIER: com.iphonjb.aipapa

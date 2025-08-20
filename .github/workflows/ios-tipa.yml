@@ -1,0 +1,45 @@
+﻿name: Build IPA (TrollStore)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode Project
+        run: xcodegen generate
+
+      - name: Build and Archive (unsigned)
+        run: |
+          xcodebuild \
+            -project Aipapa.xcodeproj \
+            -scheme Aipapa \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath "${{ github.workspace }}/build/Aipapa.xcarchive" \
+            clean archive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "${{ github.workspace }}/build/Aipapa.xcarchive" \
+            -exportPath "${{ github.workspace }}/build" \
+            -exportOptionsPlist "${{ github.workspace }}/ExportOptions.plist"
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aipapa-IPA
+          path: build/*.ipa
